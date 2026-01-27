@@ -1,0 +1,71 @@
+import boto3
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from botocore.exceptions import NoCredentialsError, ClientError
+
+from app.api.admin.blog import router as admin_blog
+from app.api.admin.skills import router as admin_skills
+from app.api.admin.projects import router as admin_projects
+from app.api.admin.upload import router as admin_upload
+from app.api.admin.profile import router as admin_profile
+from app.api.admin.comment import router as admin_comment
+
+from app.api.public.blog import router as public_blog
+from app.api.public.skills import router as public_skills
+from app.api.public.comment import router as public_comment
+from app.api.public.projects import router as public_projects
+from app.api.public.profile import router as public_profile
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:5174"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/test-dynamodb")
+def test_dynamodb():
+    try:
+        dynamodb = boto3.client("dynamodb", region_name="ap-south-1")  # change region
+        response = dynamodb.list_tables()
+
+        return {
+            "status": "success",
+            "message": "DynamoDB connection working!",
+            "tables": response.get("TableNames", [])
+        }
+
+    except NoCredentialsError:
+        return {
+            "status": "error",
+            "message": "AWS credentials not found. Check AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY"
+        }
+
+    except ClientError as e:
+        return {
+            "status": "error",
+            "message": "DynamoDB connection failed",
+            "details": str(e)
+        }
+
+
+app.include_router(admin_blog, prefix="/admin")
+app.include_router(admin_skills, prefix="/admin")
+app.include_router(admin_projects, prefix="/admin")
+app.include_router(admin_upload, prefix="/admin")
+app.include_router(admin_profile, prefix="/admin")
+app.include_router(admin_comment, prefix="/admin")
+
+app.include_router(public_blog, prefix="/public")
+app.include_router(public_skills, prefix="/public")
+app.include_router(public_comment, prefix="/public")
+app.include_router(public_projects, prefix="/public")
+app.include_router(public_profile, prefix="/public")
+from app.api.auth import router as auth_router
+app.include_router(auth_router)
+
+from mangum import Mangum
+handler = Mangum(app)

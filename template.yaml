@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Backend FastAPI Application
+
+Parameters:
+  BlogsTable:
+    Type: String
+    Default: BlogsTable
+    Description: Name of the existing Blogs DynamoDB table
+  CommentsTable:
+    Type: String
+    Default: BlogCommentsTable
+    Description: Name of the existing Comments DynamoDB table
+  SkillsTable:
+    Type: String
+    Default: SkillsTable
+    Description: Name of the existing Skills DynamoDB table
+  ProjectsTable:
+    Type: String
+    Default: ProjectsTable
+    Description: Name of the existing Projects DynamoDB table
+  ProfileTable:
+    Type: String
+    Default: ProfileTable
+    Description: Name of the existing Profile DynamoDB table
+  UsersTable:
+    Type: String
+    Default: UsersTable
+    Description: Name of the existing Users DynamoDB table
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: python3.10
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        AWS_REGION: !Ref AWS::Region
+        BLOG_TABLE: !Ref BlogsTable
+        COMMENTS_TABLE: !Ref CommentsTable
+        SKILL_TABLE: !Ref SkillsTable
+        PROJECTS_TABLE: !Ref ProjectsTable
+        PROFILE_TABLE: !Ref ProfileTable
+        USERS_TABLE: !Ref UsersTable
+        # Add other env vars here or reference them from Parameters/Secrets
+
+Resources:
+  BackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app.main.handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BlogsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CommentsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SkillsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProjectsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProfileTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+
+
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
