@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class UploadRequest(BaseModel):
+    passkey: str
     filename: str
     content_type: str
     folder: str = "misc" # e.g. "blogs", "projects"

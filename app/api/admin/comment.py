@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.repositories.comment_repo import CommentRepo
-from app.core.security import get_current_admin
+from app.core.security import verify_passkey
 
 router = APIRouter(prefix="/comment", tags=["Comments (Admin)"])
 
 @router.delete("/{blogId}/{commentId}")
-def delete_comment(blogId: str, commentId: str, admin: dict = Depends(get_current_admin)):
+def delete_comment(blogId: str, commentId: str, passkey: str):
+    verify_passkey(passkey)
     repo = CommentRepo()
     deleted = repo.delete_comment(blogId, commentId)
     if not deleted:

@@ -46,6 +46,7 @@ class ProjectDetail(BaseModel):
     updated_at: Optional[str] = None
 
 class ProjectCreate(BaseModel):
+    passkey: str
     slug: str
     name: str
     subtitle: str
@@ -70,6 +71,7 @@ class ProjectCreate(BaseModel):
     screenshots: List[str]
 
 class ProjectUpdate(BaseModel):
+    passkey: str
     slug: Optional[str] = None
     name: Optional[str] = None
     subtitle: Optional[str] = None
@@ -94,4 +96,4 @@ class ProjectUpdate(BaseModel):
     screenshots: Optional[List[str]] = None
 
 class ProjectDelete(BaseModel):
-    pass
+    passkey: str

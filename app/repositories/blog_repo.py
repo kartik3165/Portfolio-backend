@@ -5,7 +5,7 @@ from app.db.dynamo import blogs_table
 from app.schemas.blog import BlogCreate, BlogDelete, BlogUpdate
 from uuid import UUID
 from uuid6 import uuid7
-from app.core.utils import get_password_hash, verify_password
+
 from dotenv import load_dotenv
 load_dotenv()
 

@@ -1,5 +1,6 @@
 import boto3
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, Request
+
 from fastapi.middleware.cors import CORSMiddleware
 from botocore.exceptions import NoCredentialsError, ClientError
 
@@ -16,15 +17,27 @@ from app.api.public.comment import router as public_comment
 from app.api.public.projects import router as public_projects
 from app.api.public.profile import router as public_profile
 
+
 app = FastAPI()
+
+
+ALLOWED_ORIGINS = [
+    "http://localhost:5173", 
+    "http://localhost:5174",
+    "https://admin.kanbs.me",
+    "https://www.admin.kanbs.me",
+    "https://kanbs.me",
+    "https://www.kanbs.me",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
 
 @app.get("/test-dynamodb")
 def test_dynamodb():
@@ -64,8 +77,7 @@ app.include_router(public_skills, prefix="/public")
 app.include_router(public_comment, prefix="/public")
 app.include_router(public_projects, prefix="/public")
 app.include_router(public_profile, prefix="/public")
-from app.api.auth import router as auth_router
-app.include_router(auth_router)
+
 
 from mangum import Mangum
 handler = Mangum(app)

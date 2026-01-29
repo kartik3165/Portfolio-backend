@@ -10,6 +10,7 @@ class Experience(BaseModel):
     description: List[str]
 
 class ExperienceCreate(BaseModel):
+    passkey: str
     role: str
     company: str
     period: str
@@ -17,6 +18,7 @@ class ExperienceCreate(BaseModel):
     description: List[str]
 
 class ExperienceUpdate(BaseModel):
+    passkey: str
     role: Optional[str] = None
     company: Optional[str] = None
     period: Optional[str] = None
@@ -35,6 +37,7 @@ class ResearchPaper(BaseModel):
     link: str
 
 class ResearchPaperCreate(BaseModel):
+    passkey: str
     title: str
     publication: str
     description: str
@@ -42,6 +45,7 @@ class ResearchPaperCreate(BaseModel):
     link: str
 
 class ResearchPaperUpdate(BaseModel):
+    passkey: str
     title: Optional[str] = None
     publication: Optional[str] = None
     description: Optional[str] = None
@@ -57,10 +61,12 @@ class Achievement(BaseModel):
     description: str
 
 class AchievementCreate(BaseModel):
+    passkey: str
     title: str
     description: str
 
 class AchievementUpdate(BaseModel):
+    passkey: str
     title: Optional[str] = None
     description: Optional[str] = None
 

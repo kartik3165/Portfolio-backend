@@ -2,11 +2,11 @@ from datetime import datetime
 import os
 from uuid6 import uuid7
 from typing import Optional
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 from app.db.dynamo import projects_table
 from app.db.keys import pk_projects, sk_project
-from app.core.utils import get_password_hash, verify_password
+
 
 class ProjectRepo:
     def __init__(self):
@@ -21,8 +21,6 @@ class ProjectRepo:
         except ClientError as e:
             print(f"Error listing projects: {e}")
             return []
-
-    from boto3.dynamodb.conditions import Attr
 
     def get_project(self, id_or_slug: str):
         try:

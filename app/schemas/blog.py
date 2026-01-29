@@ -20,6 +20,7 @@ class BlogDetail(BlogSummary):
     content: str
 
 class BlogCreate(BaseModel):
+    passkey: str
     slug: str
     title: str
     excerpt: str
@@ -32,6 +33,7 @@ class BlogCreate(BaseModel):
     content: str
 
 class BlogUpdate(BaseModel):
+    passkey: str
     slug: str | None = None
     title: str | None = None
     excerpt: str | None = None
@@ -44,7 +46,7 @@ class BlogUpdate(BaseModel):
     content: str | None = None
 
 class BlogDelete(BaseModel):
-    pass
+    passkey: str
 
 class Comment(BaseModel):
     id: str

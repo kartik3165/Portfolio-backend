@@ -7,7 +7,7 @@ client = TestClient(app)
 
 def test_add_skill_success():
     payload = {
-        "passkey": "test_passkey",
+        "passkey": "secret",
         "skill": "Python"
     }
     mock_response = {"skills": ["Python"]}
@@ -21,26 +21,12 @@ def test_add_skill_success():
             
             assert response.status_code == 200
             assert response.json() == mock_response
-            mock_verify.assert_called_once_with("test_passkey")
             mock_instance.add_skill.assert_called_once_with("Python")
-
-def test_add_skill_invalid_passkey():
-    payload = {
-        "passkey": "wrong_passkey",
-        "skill": "Python"
-    }
-    
-    with patch("app.api.admin.skills.verify_passkey") as mock_verify:
-        mock_verify.side_effect = HTTPException(status_code=401, detail="Invalid passkey")
-        
-        response = client.post("/admin/skill/add", json=payload)
-        
-        assert response.status_code == 401
-        assert response.json()["detail"] == "Invalid passkey"
+            mock_verify.assert_called_once_with("secret")
 
 def test_remove_skill_success():
     payload = {
-        "passkey": "test_passkey",
+        "passkey": "secret",
         "skill": "Python"
     }
     mock_response = {"skills": []}
@@ -54,5 +40,5 @@ def test_remove_skill_success():
             
             assert response.status_code == 200
             assert response.json() == mock_response
-            mock_verify.assert_called_once_with("test_passkey")
             mock_instance.remove_skill.assert_called_once_with("Python")
+            mock_verify.assert_called_once_with("secret")

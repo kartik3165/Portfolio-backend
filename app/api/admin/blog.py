@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 
 from app.schemas.blog import BlogCreate, BlogDelete, BlogDetail, BlogUpdate
 from app.repositories.blog_repo import BlogRepo
-from app.core.security import get_current_admin
+from app.core.security import verify_passkey
 
 router = APIRouter(
     prefix="/blog",
@@ -12,7 +12,8 @@ router = APIRouter(
 
 
 @router.post("", response_model=BlogDetail)
-async def create_blog(data: BlogCreate, admin: dict = Depends(get_current_admin)):
+async def create_blog(data: BlogCreate):
+    verify_passkey(data.passkey)
     repo = BlogRepo()
     try:
         item = await repo.create_blog(data.model_dump())
@@ -24,7 +25,8 @@ async def create_blog(data: BlogCreate, admin: dict = Depends(get_current_admin)
         )
 
 @router.put("/{id}", response_model=BlogDetail)
-async def update_blog(id: str, payload: BlogUpdate, admin: dict = Depends(get_current_admin)):
+async def update_blog(id: str, payload: BlogUpdate):
+    verify_passkey(payload.passkey)
     repo = BlogRepo()
     try:
         updated = await repo.update_blog(id, payload.model_dump())
@@ -35,7 +37,8 @@ async def update_blog(id: str, payload: BlogUpdate, admin: dict = Depends(get_cu
         raise HTTPException(status_code=404, detail="Blog not found")
 
 @router.delete("/{id}")
-async def delete_blog(id: str, admin: dict = Depends(get_current_admin)):
+async def delete_blog(id: str, payload: BlogDelete):
+    verify_passkey(payload.passkey)
     repo = BlogRepo()
     try:
         deleted = await repo.delete_blog(id) 

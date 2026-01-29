@@ -5,13 +5,15 @@ from app.schemas.profile import (
     ResearchPaper, ResearchPaperCreate, ResearchPaperUpdate,
     Achievement, AchievementCreate, AchievementUpdate
 )
-from app.core.security import get_current_admin
+from app.repositories.profile_repo import ProfileRepo
+from app.core.security import verify_passkey
 
 router = APIRouter(prefix="", tags=["Profile (Admin)"])
 
 # --- Experience ---
 @router.post("/experience", response_model=Experience)
-def create_experience(payload: ExperienceCreate, admin: dict = Depends(get_current_admin)):
+def create_experience(payload: ExperienceCreate):
+    verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         return repo.create_experience(payload.model_dump())
@@ -19,7 +21,8 @@ def create_experience(payload: ExperienceCreate, admin: dict = Depends(get_curre
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.put("/experience/{id}", response_model=Experience)
-def update_experience(id: str, payload: ExperienceUpdate, admin: dict = Depends(get_current_admin)):
+def update_experience(id: str, payload: ExperienceUpdate):
+    verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         updated = repo.update_experience(id, payload.model_dump())
@@ -30,7 +33,8 @@ def update_experience(id: str, payload: ExperienceUpdate, admin: dict = Depends(
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.delete("/experience/{id}")
-def delete_experience(id: str, admin: dict = Depends(get_current_admin)): 
+def delete_experience(id: str, passkey: str): 
+    verify_passkey(passkey)
     repo = ProfileRepo()
     try:
         deleted = repo.delete_experience(id)
@@ -42,7 +46,8 @@ def delete_experience(id: str, admin: dict = Depends(get_current_admin)):
 
 # --- Research Papers ---
 @router.post("/research_papers", response_model=ResearchPaper)
-def create_paper(payload: ResearchPaperCreate, admin: dict = Depends(get_current_admin)):
+def create_paper(payload: ResearchPaperCreate):
+    verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         return repo.create_paper(payload.model_dump())
@@ -50,7 +55,8 @@ def create_paper(payload: ResearchPaperCreate, admin: dict = Depends(get_current
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.put("/research_papers/{id}", response_model=ResearchPaper)
-def update_paper(id: str, payload: ResearchPaperUpdate, admin: dict = Depends(get_current_admin)):
+def update_paper(id: str, payload: ResearchPaperUpdate):
+    verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         updated = repo.update_paper(id, payload.model_dump())
@@ -61,7 +67,8 @@ def update_paper(id: str, payload: ResearchPaperUpdate, admin: dict = Depends(ge
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.delete("/research_papers/{id}")
-def delete_paper(id: str, admin: dict = Depends(get_current_admin)):
+def delete_paper(id: str, passkey: str):
+    verify_passkey(passkey)
     repo = ProfileRepo()
     try:
         deleted = repo.delete_paper(id)
@@ -73,7 +80,8 @@ def delete_paper(id: str, admin: dict = Depends(get_current_admin)):
 
 # --- Achievements ---
 @router.post("/achievements", response_model=Achievement)
-def create_achievement(payload: AchievementCreate, admin: dict = Depends(get_current_admin)):
+def create_achievement(payload: AchievementCreate):
+    verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         return repo.create_achievement(payload.model_dump())
@@ -81,7 +89,8 @@ def create_achievement(payload: AchievementCreate, admin: dict = Depends(get_cur
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.put("/achievements/{id}", response_model=Achievement)
-def update_achievement(id: str, payload: AchievementUpdate, admin: dict = Depends(get_current_admin)):
+def update_achievement(id: str, payload: AchievementUpdate):
+    verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         updated = repo.update_achievement(id, payload.model_dump())
@@ -92,7 +101,8 @@ def update_achievement(id: str, payload: AchievementUpdate, admin: dict = Depend
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.delete("/achievements/{id}")
-def delete_achievement(id: str, admin: dict = Depends(get_current_admin)):
+def delete_achievement(id: str, passkey: str):
+    verify_passkey(passkey)
     repo = ProfileRepo()
     try:
         deleted = repo.delete_achievement(id)

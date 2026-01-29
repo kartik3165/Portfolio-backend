@@ -1,33 +1,26 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  Backend FastAPI Application
+Description: Backend for Portfolio Application (HTTP API)
 
 Parameters:
   BlogsTable:
     Type: String
     Default: BlogsTable
-    Description: Name of the existing Blogs DynamoDB table
   CommentsTable:
     Type: String
     Default: BlogCommentsTable
-    Description: Name of the existing Comments DynamoDB table
   SkillsTable:
     Type: String
     Default: SkillsTable
-    Description: Name of the existing Skills DynamoDB table
   ProjectsTable:
     Type: String
     Default: ProjectsTable
-    Description: Name of the existing Projects DynamoDB table
   ProfileTable:
     Type: String
     Default: ProfileTable
-    Description: Name of the existing Profile DynamoDB table
   UsersTable:
     Type: String
     Default: UsersTable
-    Description: Name of the existing Users DynamoDB table
 
 Globals:
   Function:
@@ -36,27 +29,55 @@ Globals:
     Runtime: python3.10
     Architectures:
       - x86_64
+    LoggingConfig:
+      LogFormat: JSON
+      ApplicationLogLevel: INFO
+      SystemLogLevel: INFO
     Environment:
       Variables:
-        AWS_REGION: !Ref AWS::Region
         BLOG_TABLE: !Ref BlogsTable
         COMMENTS_TABLE: !Ref CommentsTable
         SKILL_TABLE: !Ref SkillsTable
         PROJECTS_TABLE: !Ref ProjectsTable
         PROFILE_TABLE: !Ref ProfileTable
         USERS_TABLE: !Ref UsersTable
-        # Add other env vars here or reference them from Parameters/Secrets
+        PASSKEY: Kartik@3165
+        JWT_SECRET: a33yiINSTHr4w9kpasLKPJYja2v8QZrvWWYC1JoLWr6wGjKPaD1q2JHtMoZqduFh
+        R2_ACCOUNT_ID: 976dcfdf7586d24be34b8392323d28b8
+        R2_ACCESS_KEY_ID: 17a69a03752ba1594849d37299b6e4c8
+        R2_SECRET_ACCESS_KEY: a6d9f322bd581f5110f630170bacb03766004bdd3b88b5b08102d27f8a06de72
+        R2_BUCKET_NAME: portfolio-bucket
+        R2_PUBLIC_BASE_URL: https://image.kanbs.me
 
 Resources:
+  ServerlessHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: Prod
+      CorsConfiguration:
+        AllowOrigins:
+          - https://admin.kanbs.me
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - content-type
+          - authorization
+        AllowCredentials: true
+
   BackendFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
       Handler: app.main.handler
       Events:
-        ApiEvent:
-          Type: Api
+        HttpApiEvent:
+          Type: HttpApi
           Properties:
+            ApiId: !Ref ServerlessHttpApi
             Path: /{proxy+}
             Method: ANY
       Policies:
@@ -73,9 +94,7 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
 
-
-
 Outputs:
   ApiUrl:
-    Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Description: HTTP API endpoint URL
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"

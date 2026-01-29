@@ -2,17 +2,17 @@ from fastapi import APIRouter, HTTPException
 from botocore.exceptions import ClientError
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectDelete, ProjectDetail
 from app.repositories.project_repo import ProjectRepo
+from app.core.security import verify_passkey
 
 router = APIRouter(
     prefix="/projects",
     tags=["Projects"]
 )
 
-from app.core.security import get_current_admin
-from fastapi import Depends
 
 @router.post("", response_model=ProjectDetail)
-def create_project(project: ProjectCreate, admin: dict = Depends(get_current_admin)):
+def create_project(project: ProjectCreate):
+    verify_passkey(project.passkey)
     repo = ProjectRepo()
     try:
         return repo.create_project(project.model_dump())
@@ -24,7 +24,8 @@ def create_project(project: ProjectCreate, admin: dict = Depends(get_current_adm
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.put("/{id}", response_model=ProjectDetail)
-def update_project(id: str, project: ProjectUpdate, admin: dict = Depends(get_current_admin)):
+def update_project(id: str, project: ProjectUpdate):
+    verify_passkey(project.passkey)
     repo = ProjectRepo()
     try:
         updated = repo.update_project(id, project.model_dump())
@@ -39,7 +40,8 @@ def update_project(id: str, project: ProjectUpdate, admin: dict = Depends(get_cu
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{id}")
-def delete_project(id: str, admin: dict = Depends(get_current_admin)):
+def delete_project(id: str, payload: ProjectDelete):
+    verify_passkey(payload.passkey)
     repo = ProjectRepo()
     try:
         repo.delete_project(id)
