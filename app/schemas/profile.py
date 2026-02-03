@@ -80,6 +80,8 @@ class Bio(BaseModel):
     highlights: List[str]
     about_intro: str
     story: str
+    hero_image: Optional[str] = None  # Hero/landing page image URL
+    about_image: Optional[str] = None  # About page image URL
 
 
 class BioUpdate(BaseModel):
@@ -87,4 +89,6 @@ class BioUpdate(BaseModel):
     highlights: List[str]
     about_intro: str
     story: str
+    hero_image: Optional[str] = None  # Hero/landing page image URL
+    about_image: Optional[str] = None  # About page image URL
     passkey: str
