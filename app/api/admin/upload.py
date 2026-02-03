@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.post("/presigned-url", response_model=PresignedUrlResponse)
-def generate_presigned_url(request: UploadRequest):
+async def generate_presigned_url(request: UploadRequest):
     verify_passkey(request.passkey)
     try:
         service = StorageService()

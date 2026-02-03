@@ -8,9 +8,9 @@ router = APIRouter(prefix="/comment", tags=["Comments"])
 
 
 @router.get("/{blogId}", response_model=List[Comment])
-def get_comments(blogId: UUID):
+async def get_comments(blogId: UUID):
     repo = CommentRepo()
-    items = repo.list_comments(blogId)
+    items = await repo.list_comments(blogId)
 
     items.sort(key=lambda x: x["timestamp"]) # type: ignore
 
@@ -18,7 +18,7 @@ def get_comments(blogId: UUID):
 
 
 @router.post("/{blogId}", response_model=Comment)
-def create_comment(blogId: UUID, payload: CommentCreate):
+async def create_comment(blogId: UUID, payload: CommentCreate):
     repo = CommentRepo()
-    item = repo.create_comment(blogId, payload.name, payload.body)
+    item = await repo.create_comment(blogId, payload.name, payload.body)
     return item

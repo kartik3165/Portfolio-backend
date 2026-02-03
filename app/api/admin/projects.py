@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from typing import List
 from botocore.exceptions import ClientError
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectDelete, ProjectDetailAdmin, ProjectSummaryAdmin
@@ -11,21 +11,21 @@ router = APIRouter(
 )
 
 @router.get("", response_model=List[ProjectSummaryAdmin])
-def list_all_projects(passkey: str):
+async def list_all_projects(passkey: str = Header(..., alias="x-admin-passkey")):
     verify_passkey(passkey)
     repo = ProjectRepo()
     try:
-        return repo.list_projects(include_drafts=True)
+        return await repo.list_projects(include_drafts=True)
     except ClientError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("", response_model=ProjectDetailAdmin)
-def create_project(project: ProjectCreate):
+async def create_project(project: ProjectCreate):
     verify_passkey(project.passkey)
     repo = ProjectRepo()
     try:
-        return repo.create_project(project.model_dump())
+        return await repo.create_project(project.model_dump())
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
     except ClientError as e:
@@ -34,11 +34,11 @@ def create_project(project: ProjectCreate):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.put("/{id}", response_model=ProjectDetailAdmin)
-def update_project(id: str, project: ProjectUpdate):
+async def update_project(id: str, project: ProjectUpdate):
     verify_passkey(project.passkey)
     repo = ProjectRepo()
     try:
-        updated = repo.update_project(id, project.model_dump())
+        updated = await repo.update_project(id, project.model_dump())
         if not updated:
              raise HTTPException(status_code=404, detail="Project not found")
         return updated
@@ -50,11 +50,11 @@ def update_project(id: str, project: ProjectUpdate):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{id}")
-def delete_project(id: str, payload: ProjectDelete):
+async def delete_project(id: str, payload: ProjectDelete):
     verify_passkey(payload.passkey)
     repo = ProjectRepo()
     try:
-        repo.delete_project(id)
+        await repo.delete_project(id)
         return {"message": "Project deleted successfully"}
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))

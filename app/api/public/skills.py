@@ -5,6 +5,6 @@ from app.repositories.skills_repo import SkillsRepo
 router = APIRouter(prefix="/skill", tags=["Skills"])
 
 @router.get("", response_model=SkillsResponse)
-def get_skills():
+async def get_skills():
     repo = SkillsRepo()
-    return repo.get_skills()
+    return await repo.get_skills()

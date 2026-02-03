@@ -4,7 +4,7 @@ class SkillsRepo:
     def __init__(self):
         self.table = skills_table()
 
-    def get_skills(self):
+    async def get_skills(self):
         res = self.table.get_item(
             Key={
                 "SKILLS": "SKILLS",
@@ -14,7 +14,7 @@ class SkillsRepo:
         item = res.get("Item")
         return {"skills": item.get("skills", [])} if item else {"skills": []}
 
-    def add_skill(self, skill: str):
+    async def add_skill(self, skill: str):
         self.table.update_item(
             Key={
                 "SKILLS": "SKILLS",
@@ -28,10 +28,10 @@ class SkillsRepo:
                 ":new": [skill],
             },
         )
-        return self.get_skills()
+        return await self.get_skills()
 
-    def remove_skill(self, skill: str):
-        current = self.get_skills()["skills"]
+    async def remove_skill(self, skill: str):
+        current = (await self.get_skills())["skills"]
         updated = [s for s in current if s != skill] # type: ignore
 
         self.table.update_item(

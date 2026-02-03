@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from botocore.exceptions import ClientError
 from typing import List
 
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 @router.get("", response_model=List[BlogDetailAdmin])
-async def list_all_blogs(passkey: str):
+async def list_all_blogs(passkey: str = Header(..., alias="x-admin-passkey")):
     verify_passkey(passkey)
     repo = BlogRepo()
     try:

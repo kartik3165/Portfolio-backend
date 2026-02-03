@@ -12,7 +12,7 @@ class ProjectRepo:
     def __init__(self):
         self.table = projects_table()
 
-    def list_projects(self, include_drafts: bool = False):
+    async def list_projects(self, include_drafts: bool = False):
         try:
             response = self.table.query(
                 KeyConditionExpression=Key("PK").eq(pk_projects())
@@ -27,7 +27,7 @@ class ProjectRepo:
             print(f"Error listing projects: {e}")
             return []
 
-    def get_project(self, id_or_slug: str):
+    async def get_project(self, id_or_slug: str):
         try:
             response = self.table.get_item(
                 Key={
@@ -50,7 +50,7 @@ class ProjectRepo:
             print(f"Error getting project {id_or_slug}: {e}")
             return None
 
-    def create_project(self, project_data: dict):
+    async def create_project(self, project_data: dict):
         now = datetime.now().isoformat()
         project_id = uuid7()
         
@@ -73,7 +73,7 @@ class ProjectRepo:
             print(f"Error creating project: {e}")
             raise e
 
-    def update_project(self, project_id: str, updates: dict):
+    async def update_project(self, project_id: str, updates: dict):
         now = datetime.now().isoformat()
         
         update_expr_parts = []
@@ -84,7 +84,7 @@ class ProjectRepo:
         valid_updates = {k: v for k, v in updates.items() if v is not None}
         
         if not valid_updates:
-            return self.get_project(project_id)
+            return await self.get_project(project_id)
 
         for key, value in valid_updates.items():
             attr_name = f"#{key}"
@@ -97,7 +97,7 @@ class ProjectRepo:
         expr_attr_names["#updated_at"] = "updated_at"
         expr_attr_values[":updated_at"] = now
         real_id = project_id
-        current_project = self.get_project(project_id)
+        current_project = await self.get_project(project_id)
         if current_project and current_project.get('id'):
             real_id = current_project.get('id')
         elif not current_project:
@@ -120,7 +120,7 @@ class ProjectRepo:
             print(f"Error updating project {project_id}: {e}")
             raise e
 
-    def delete_project(self, project_id: str):
+    async def delete_project(self, project_id: str):
         try:
             self.table.delete_item(
                 Key={

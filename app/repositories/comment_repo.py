@@ -12,13 +12,13 @@ class CommentRepo:
     def __init__(self):
         self.table = comments_table()
 
-    def list_comments(self, blog_id: UUID):
+    async def list_comments(self, blog_id: UUID):
         res = self.table.query(
             KeyConditionExpression=Key("PK").eq(f"BLOG#{blog_id}")
         )
         return res.get("Items", [])
 
-    def create_comment(self, blog_id: UUID, name: str, body: str):
+    async def create_comment(self, blog_id: UUID, name: str, body: str):
         now = datetime.now(timezone.utc)
         comment_id = uuid7()
 
@@ -35,7 +35,7 @@ class CommentRepo:
         self.table.put_item(Item=item)
         return item
 
-    def delete_comment(self, blog_id: str, comment_id: str):
+    async def delete_comment(self, blog_id: str, comment_id: str):
         from boto3.dynamodb.conditions import Attr
         
         try:

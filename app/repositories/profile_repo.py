@@ -16,7 +16,7 @@ class ProfileRepo:
     def __init__(self):
         self.table = profile_table()
     
-    def list_experience(self):
+    async def list_experience(self):
         try:
             response = self.table.query(
                 KeyConditionExpression="PK = :pk AND begins_with(SK, :sk)",
@@ -30,7 +30,7 @@ class ProfileRepo:
             print(f"Error listing experience: {e}")
             return []
     
-    def create_experience(self, data: dict):
+    async def create_experience(self, data: dict):
         exp_id = str(uuid7())
         item = {
             "PK": pk_profile(),
@@ -41,7 +41,7 @@ class ProfileRepo:
         self.table.put_item(Item=item)
         return item
 
-    def update_experience(self, exp_id: str, updates: dict):
+    async def update_experience(self, exp_id: str, updates: dict):
         update_expr = []
         expr_attr_names = {}
         expr_attr_values = {}
@@ -73,7 +73,7 @@ class ProfileRepo:
         except ClientError:
             return None
 
-    def delete_experience(self, exp_id: str):
+    async def delete_experience(self, exp_id: str):
         try:
             self.table.delete_item(
                 Key={
@@ -86,7 +86,7 @@ class ProfileRepo:
         except ClientError:
             return False
 
-    def list_papers(self):
+    async def list_papers(self):
         try:
             response = self.table.query(
                 KeyConditionExpression="PK = :pk AND begins_with(SK, :sk)",
@@ -100,7 +100,7 @@ class ProfileRepo:
             print(f"Error listing papers: {e}")
             return []
 
-    def create_paper(self, data: dict):
+    async def create_paper(self, data: dict):
         paper_id = str(uuid7())
         item = {
             "PK": pk_profile(),
@@ -111,7 +111,7 @@ class ProfileRepo:
         self.table.put_item(Item=item)
         return item
 
-    def update_paper(self, paper_id: str, updates: dict):
+    async def update_paper(self, paper_id: str, updates: dict):
         update_expr = []
         expr_attr_names = {}
         expr_attr_values = {}
@@ -143,7 +143,7 @@ class ProfileRepo:
         except ClientError:
             return None
 
-    def delete_paper(self, paper_id: str):
+    async def delete_paper(self, paper_id: str):
         try:
             self.table.delete_item(
                 Key={
@@ -156,7 +156,7 @@ class ProfileRepo:
         except ClientError:
             return False
 
-    def list_achievements(self):
+    async def list_achievements(self):
         try:
             response = self.table.query(
                 KeyConditionExpression="PK = :pk AND begins_with(SK, :sk)",
@@ -170,7 +170,7 @@ class ProfileRepo:
             print(f"Error listing achievements: {e}")
             return []
 
-    def create_achievement(self, data: dict):
+    async def create_achievement(self, data: dict):
         ach_id = str(uuid7())
         item = {
             "PK": pk_profile(),
@@ -181,7 +181,7 @@ class ProfileRepo:
         self.table.put_item(Item=item)
         return item
 
-    def update_achievement(self, ach_id: str, updates: dict):
+    async def update_achievement(self, ach_id: str, updates: dict):
         update_expr = []
         expr_attr_names = {}
         expr_attr_values = {}
@@ -213,7 +213,7 @@ class ProfileRepo:
         except ClientError:
             return None
 
-    def delete_achievement(self, ach_id: str):
+    async def delete_achievement(self, ach_id: str):
         try:
             self.table.delete_item(
                 Key={
@@ -226,7 +226,7 @@ class ProfileRepo:
         except ClientError:
             return False
 
-    def get_bio(self):
+    async def get_bio(self):
         try:
             response = self.table.get_item(
                 Key={
@@ -245,7 +245,7 @@ class ProfileRepo:
             print(f"Error getting bio: {e}")
             return {}
 
-    def update_bio(self, data: dict):
+    async def update_bio(self, data: dict):
         item = {
             "PK": pk_bio(),
             "SK": sk_bio(),

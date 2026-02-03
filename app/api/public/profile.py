@@ -9,28 +9,28 @@ from app.schemas.profile import (
 router = APIRouter(prefix="", tags=["Profile"])
 
 @router.get("/experience", response_model=ExperienceResponse)
-def get_experience():
+async def get_experience():
     repo = ProfileRepo()
-    items = repo.list_experience()
+    items = await repo.list_experience()
     return {"experience": items}
 
 @router.get("/research_papers", response_model=ResearchPaperResponse)
-def get_research_papers():
+async def get_research_papers():
     repo = ProfileRepo()
-    items = repo.list_papers()
+    items = await repo.list_papers()
     return {"research_papers": items}
 
 @router.get("/achievements", response_model=AchievementResponse)
-def get_achievements():
+async def get_achievements():
     repo = ProfileRepo()
-    items = repo.list_achievements()
+    items = await repo.list_achievements()
     return {"achievements": items}
 
 
 @router.get("/bio")
-def get_bio():
+async def get_bio():
     repo = ProfileRepo()
-    data = repo.get_bio()
+    data = await repo.get_bio()
     return {
         "data": {
             "bio": data

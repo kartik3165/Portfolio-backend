@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from app.repositories.profile_repo import ProfileRepo
 from app.schemas.profile import (
     Experience, ExperienceCreate, ExperienceUpdate,
@@ -12,20 +12,20 @@ router = APIRouter(prefix="", tags=["Profile (Admin)"])
 
 # --- Experience ---
 @router.post("/experience", response_model=Experience)
-def create_experience(payload: ExperienceCreate):
+async def create_experience(payload: ExperienceCreate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
-        return repo.create_experience(payload.model_dump())
+        return await repo.create_experience(payload.model_dump())
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.put("/experience/{id}", response_model=Experience)
-def update_experience(id: str, payload: ExperienceUpdate):
+async def update_experience(id: str, payload: ExperienceUpdate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
-        updated = repo.update_experience(id, payload.model_dump())
+        updated = await repo.update_experience(id, payload.model_dump())
         if not updated:
             raise HTTPException(status_code=404, detail="Experience not found")
         return updated
@@ -33,11 +33,11 @@ def update_experience(id: str, payload: ExperienceUpdate):
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.delete("/experience/{id}")
-def delete_experience(id: str, passkey: str): 
+async def delete_experience(id: str, passkey: str = Header(..., alias="x-admin-passkey")): 
     verify_passkey(passkey)
     repo = ProfileRepo()
     try:
-        deleted = repo.delete_experience(id)
+        deleted = await repo.delete_experience(id)
         if not deleted:
              raise HTTPException(status_code=404, detail="Experience not found")
         return {"message": "Experience deleted successfully"}
@@ -46,20 +46,20 @@ def delete_experience(id: str, passkey: str):
 
 # --- Research Papers ---
 @router.post("/research_papers", response_model=ResearchPaper)
-def create_paper(payload: ResearchPaperCreate):
+async def create_paper(payload: ResearchPaperCreate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
-        return repo.create_paper(payload.model_dump())
+        return await repo.create_paper(payload.model_dump())
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.put("/research_papers/{id}", response_model=ResearchPaper)
-def update_paper(id: str, payload: ResearchPaperUpdate):
+async def update_paper(id: str, payload: ResearchPaperUpdate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
-        updated = repo.update_paper(id, payload.model_dump())
+        updated = await repo.update_paper(id, payload.model_dump())
         if not updated:
             raise HTTPException(status_code=404, detail="Research Paper not found")
         return updated
@@ -67,11 +67,11 @@ def update_paper(id: str, payload: ResearchPaperUpdate):
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.delete("/research_papers/{id}")
-def delete_paper(id: str, passkey: str):
+async def delete_paper(id: str, passkey: str = Header(..., alias="x-admin-passkey")):
     verify_passkey(passkey)
     repo = ProfileRepo()
     try:
-        deleted = repo.delete_paper(id)
+        deleted = await repo.delete_paper(id)
         if not deleted:
              raise HTTPException(status_code=404, detail="Research Paper not found")
         return {"message": "Research Paper deleted successfully"}
@@ -80,20 +80,20 @@ def delete_paper(id: str, passkey: str):
 
 # --- Achievements ---
 @router.post("/achievements", response_model=Achievement)
-def create_achievement(payload: AchievementCreate):
+async def create_achievement(payload: AchievementCreate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
-        return repo.create_achievement(payload.model_dump())
+        return await repo.create_achievement(payload.model_dump())
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.put("/achievements/{id}", response_model=Achievement)
-def update_achievement(id: str, payload: AchievementUpdate):
+async def update_achievement(id: str, payload: AchievementUpdate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
-        updated = repo.update_achievement(id, payload.model_dump())
+        updated = await repo.update_achievement(id, payload.model_dump())
         if not updated:
             raise HTTPException(status_code=404, detail="Achievement not found")
         return updated
@@ -101,11 +101,11 @@ def update_achievement(id: str, payload: AchievementUpdate):
         raise HTTPException(status_code=401, detail=str(e))
 
 @router.delete("/achievements/{id}")
-def delete_achievement(id: str, passkey: str):
+async def delete_achievement(id: str, passkey: str = Header(..., alias="x-admin-passkey")):
     verify_passkey(passkey)
     repo = ProfileRepo()
     try:
-        deleted = repo.delete_achievement(id)
+        deleted = await repo.delete_achievement(id)
         if not deleted:
              raise HTTPException(status_code=404, detail="Achievement not found")
         return {"message": "Achievement deleted successfully"}
@@ -114,13 +114,13 @@ def delete_achievement(id: str, passkey: str):
 
 
 @router.put("/bio")
-def update_bio(payload: BioUpdate):
+async def update_bio(payload: BioUpdate):
     verify_passkey(payload.passkey)
     repo = ProfileRepo()
     try:
         data = payload.model_dump()
         data.pop("passkey")
-        updated = repo.update_bio(data)
+        updated = await repo.update_bio(data)
         if not updated:
             raise HTTPException(status_code=500, detail="Failed to update bio")
         return {
