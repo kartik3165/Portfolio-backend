@@ -18,6 +18,9 @@ class ProjectSummary(BaseModel):
     color: str = ""
     tech: List[TechItem] = []
 
+class ProjectSummaryAdmin(ProjectSummary):
+    is_draft: bool = False
+
 class ProjectDetail(BaseModel):
     id: str = "unknown"
     slug: str = ""
@@ -45,6 +48,9 @@ class ProjectDetail(BaseModel):
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
+class ProjectDetailAdmin(ProjectDetail):
+    is_draft: bool = False
+
 class ProjectCreate(BaseModel):
     passkey: str
     slug: str
@@ -68,7 +74,9 @@ class ProjectCreate(BaseModel):
     live: str
     document: str
     features: List[str]
+    features: List[str]
     screenshots: List[str]
+    is_draft: bool = False
 
 class ProjectUpdate(BaseModel):
     passkey: str
@@ -94,6 +102,7 @@ class ProjectUpdate(BaseModel):
     document: Optional[str] = None
     features: Optional[List[str]] = None
     screenshots: Optional[List[str]] = None
+    is_draft: Optional[bool] = None
 
 class ProjectDelete(BaseModel):
     passkey: str

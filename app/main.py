@@ -10,6 +10,7 @@ from app.api.admin.projects import router as admin_projects
 from app.api.admin.upload import router as admin_upload
 from app.api.admin.profile import router as admin_profile
 from app.api.admin.comment import router as admin_comment
+from app.api.admin.auth import router as admin_auth
 
 from app.api.public.blog import router as public_blog
 from app.api.public.skills import router as public_skills
@@ -71,6 +72,7 @@ app.include_router(admin_projects, prefix="/admin")
 app.include_router(admin_upload, prefix="/admin")
 app.include_router(admin_profile, prefix="/admin")
 app.include_router(admin_comment, prefix="/admin")
+app.include_router(admin_auth, prefix="/admin")
 
 app.include_router(public_blog, prefix="/public")
 app.include_router(public_skills, prefix="/public")

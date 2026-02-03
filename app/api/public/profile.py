@@ -25,3 +25,14 @@ def get_achievements():
     repo = ProfileRepo()
     items = repo.list_achievements()
     return {"achievements": items}
+
+
+@router.get("/bio")
+def get_bio():
+    repo = ProfileRepo()
+    data = repo.get_bio()
+    return {
+        "data": {
+            "bio": data
+        }
+    }

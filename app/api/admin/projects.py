@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
+from typing import List
 from botocore.exceptions import ClientError
-from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectDelete, ProjectDetail
+from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectDelete, ProjectDetailAdmin, ProjectSummaryAdmin
 from app.repositories.project_repo import ProjectRepo
 from app.core.security import verify_passkey
 
@@ -9,8 +10,17 @@ router = APIRouter(
     tags=["Projects"]
 )
 
+@router.get("", response_model=List[ProjectSummaryAdmin])
+def list_all_projects(passkey: str):
+    verify_passkey(passkey)
+    repo = ProjectRepo()
+    try:
+        return repo.list_projects(include_drafts=True)
+    except ClientError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("", response_model=ProjectDetail)
+
+@router.post("", response_model=ProjectDetailAdmin)
 def create_project(project: ProjectCreate):
     verify_passkey(project.passkey)
     repo = ProjectRepo()
@@ -23,7 +33,7 @@ def create_project(project: ProjectCreate):
              raise HTTPException(status_code=409, detail="Project already exists")
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.put("/{id}", response_model=ProjectDetail)
+@router.put("/{id}", response_model=ProjectDetailAdmin)
 def update_project(id: str, project: ProjectUpdate):
     verify_passkey(project.passkey)
     repo = ProjectRepo()

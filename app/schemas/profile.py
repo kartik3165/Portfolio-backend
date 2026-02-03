@@ -70,5 +70,21 @@ class AchievementUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
 
+
 class AchievementResponse(BaseModel):
     achievements: List[Achievement]
+
+
+class Bio(BaseModel):
+    summary: str
+    highlights: List[str]
+    about_intro: str
+    story: str
+
+
+class BioUpdate(BaseModel):
+    summary: str
+    highlights: List[str]
+    about_intro: str
+    story: str
+    passkey: str

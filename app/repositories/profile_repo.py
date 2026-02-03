@@ -6,7 +6,9 @@ from app.db.keys import (
     pk_profile,
     sk_exp,
     sk_paper,
-    sk_ach
+    sk_ach,
+    pk_bio,
+    sk_bio
 )
 
 
@@ -222,4 +224,36 @@ class ProfileRepo:
             )
             return True
         except ClientError:
+            return False
+
+    def get_bio(self):
+        try:
+            response = self.table.get_item(
+                Key={
+                    "PK": pk_bio(),
+                    "SK": sk_bio()
+                }
+            )
+            item = response.get("Item")
+            if item:
+                # remove internal keys
+                item.pop("PK", None)
+                item.pop("SK", None)
+                return item
+            return {}
+        except ClientError as e:
+            print(f"Error getting bio: {e}")
+            return {}
+
+    def update_bio(self, data: dict):
+        item = {
+            "PK": pk_bio(),
+            "SK": sk_bio(),
+            **data
+        }
+        try:
+            self.table.put_item(Item=item)
+            return True
+        except ClientError as e:
+            print(f"Error updating bio: {e}")
             return False

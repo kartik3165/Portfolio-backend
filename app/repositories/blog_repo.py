@@ -14,11 +14,16 @@ class BlogRepo:
     def __init__(self):
         self.table = blogs_table()
 
-    async def list_blogs(self):
+    async def list_blogs(self, include_drafts: bool = False):
         res = self.table.query(
             KeyConditionExpression=Key("PK").eq("BLOG")
         )
         items = res.get("Items", [])
+        
+        # Filter drafts if not permitted
+        if not include_drafts:
+             items = [item for item in items if not item.get("is_draft", False)]
+
         for item in items:
             if "slug" not in item:
                 item["slug"] = item["id"]
@@ -57,6 +62,7 @@ class BlogRepo:
             "date": blog["date"],
             "readtime": blog["readtime"],
             "image": blog["image"],
+            "is_draft": blog.get("is_draft", False),
             "gallery": blog.get("gallery", []),
             "tags": blog["tags"],
             "content": blog["content"],
@@ -88,7 +94,7 @@ class BlogRepo:
 
         for field in [
             "title", "slug", "excerpt", "author", "date",
-            "readtime", "image", "gallery", "tags", "content"
+            "readtime", "image", "gallery", "tags", "content", "is_draft"
         ]:
             if field in updates and updates[field] is not None:
                 add_field(field, updates[field])

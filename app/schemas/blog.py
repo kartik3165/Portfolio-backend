@@ -16,8 +16,14 @@ class BlogSummary(BaseModel):
     created_at: str
     updated_at: str
 
+class BlogSummaryAdmin(BlogSummary):
+    is_draft: bool = False
+
 class BlogDetail(BlogSummary):
     content: str
+
+class BlogDetailAdmin(BlogDetail):
+    is_draft: bool = False
 
 class BlogCreate(BaseModel):
     passkey: str
@@ -28,6 +34,7 @@ class BlogCreate(BaseModel):
     date: str
     readtime: str
     image: str
+    is_draft: bool = False
     gallery: List[str] = []
     tags: List[str]
     content: str
@@ -41,6 +48,7 @@ class BlogUpdate(BaseModel):
     date: str | None = None
     readtime: str | None = None
     image: str | None = None
+    is_draft: bool | None = None
     gallery: List[str] | None = None
     tags: List[str] | None = None
     content: str | None = None

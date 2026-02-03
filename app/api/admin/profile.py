@@ -3,9 +3,9 @@ from app.repositories.profile_repo import ProfileRepo
 from app.schemas.profile import (
     Experience, ExperienceCreate, ExperienceUpdate,
     ResearchPaper, ResearchPaperCreate, ResearchPaperUpdate,
-    Achievement, AchievementCreate, AchievementUpdate
+    Achievement, AchievementCreate, AchievementUpdate,
+    BioUpdate
 )
-from app.repositories.profile_repo import ProfileRepo
 from app.core.security import verify_passkey
 
 router = APIRouter(prefix="", tags=["Profile (Admin)"])
@@ -109,5 +109,25 @@ def delete_achievement(id: str, passkey: str):
         if not deleted:
              raise HTTPException(status_code=404, detail="Achievement not found")
         return {"message": "Achievement deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+
+@router.put("/bio")
+def update_bio(payload: BioUpdate):
+    verify_passkey(payload.passkey)
+    repo = ProfileRepo()
+    try:
+        data = payload.model_dump()
+        data.pop("passkey")
+        updated = repo.update_bio(data)
+        if not updated:
+            raise HTTPException(status_code=500, detail="Failed to update bio")
+        return {
+            "status": "success",
+            "data": {
+                "message": "Bio updated successfully"
+            }
+        }
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))

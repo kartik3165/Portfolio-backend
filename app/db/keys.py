@@ -68,3 +68,11 @@ def pk_contact():
 
 def sk_message(timestamp: str):
     return f"MSG#{timestamp}"
+
+
+def pk_bio():
+    return "METADATA#BIO"
+
+
+def sk_bio():
+    return "PROFILE"

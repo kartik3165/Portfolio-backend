@@ -12,12 +12,17 @@ class ProjectRepo:
     def __init__(self):
         self.table = projects_table()
 
-    def list_projects(self):
+    def list_projects(self, include_drafts: bool = False):
         try:
             response = self.table.query(
                 KeyConditionExpression=Key("PK").eq(pk_projects())
             )
-            return response.get('Items', [])
+            items = response.get('Items', [])
+            
+            if not include_drafts:
+                items = [item for item in items if not item.get("is_draft", False)]
+                
+            return items
         except ClientError as e:
             print(f"Error listing projects: {e}")
             return []
