@@ -47,7 +47,7 @@ Globals:
         R2_ACCESS_KEY_ID: 17a69a03752ba1594849d37299b6e4c8
         R2_SECRET_ACCESS_KEY: a6d9f322bd581f5110f630170bacb03766004bdd3b88b5b08102d27f8a06de72
         R2_BUCKET_NAME: portfolio-bucket
-        R2_PUBLIC_BASE_URL: https://image.kanbs.me
+        R2_PUBLIC_BASE_URL: https://pub-b679db65aad449d592f65738b07ce265.r2.dev
         ADMIN_EMAIL: kartiknagare3165@gmail.com
         ADMIN_PASSWORD: Kartik@3165
 
