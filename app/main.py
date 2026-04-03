@@ -29,6 +29,8 @@ ALLOWED_ORIGINS = [
     "https://www.admin.kanbs.me",
     "https://kanbs.me",
     "https://www.kanbs.me",
+    "https://kanbs.pages.dev",
+    "https://portfolio-frontend-admin.pages.dev"
 ]
 
 app.add_middleware(
